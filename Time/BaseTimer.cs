@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Imagin.Core.Time;
+namespace Ion.Time;
 
 public abstract class BaseTimer
 {

@@ -1,70 +1,97 @@
-﻿using Imagin.Core.Linq;
+﻿using Ion.Numeral;
 using System;
+using System.Globalization;
+using System.Numerics;
 
-namespace Imagin.Core.Storage;
+namespace Ion.Storage;
 
-[Serializable]
-public struct FileSize : IEquatable<FileSize>
+public readonly record struct FileSize(long Value) : IFormattable, IMinMaxValue<FileSize>
 {
-    /// <summary>Specifies the largest possible value (<see cref="ulong.MaxValue"/>).</summary>
-    public readonly static double MaxValue = ulong.MaxValue;
+    public const string Byte = "B";
 
-    /// <summary>Specifies the smallest possible value (<see cref="ulong.MinValue"/>).</summary>
-    public readonly static double MinValue = ulong.MinValue;
+    public const string StringFormat = "{0} {1}"; /// 0 B
+
+    public const long Upper = 1000;
+
+    public const long UpperBinary = 1024;
+
+    public static readonly string[] Label = [Byte, "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+
+    public static readonly string[] LabelSI = [Byte, "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+    public static readonly long Max = ulong.MaxValue.ToInt64();
+
+    public static readonly long Min = ulong.MinValue.ToInt64();
+
+    /// <inheritdoc cref="ulong.MaxValue"/>
+    public static FileSize MaxValue => new(Max);
+
+    /// <inheritdoc cref="ulong.MinValue"/>
+    public static FileSize MinValue => new(Min);
+
+    public readonly long Value { get; } = Value.Clamp(Min, Max);
+
+    /// <see cref="Region.Operator"/>
+    #region
+
+    public static implicit operator FileSize(long i) => new(i);
+
+    public static implicit operator FileSize(int i) => new(i);
+
+    public static implicit operator long(FileSize i) => i.Value;
+
+    public static implicit operator int(FileSize i) => i.Value.ToInt32();
 
     ///
 
-    public ulong Value { get; private set; }
+    public static bool operator <(FileSize a, FileSize b) => a.Value < b.Value;
+
+    public static bool operator >(FileSize a, FileSize b) => a.Value > b.Value;
+
+    public static bool operator <=(FileSize a, FileSize b) => a.Value <= b.Value;
+
+    public static bool operator >=(FileSize a, FileSize b) => a.Value >= b.Value;
 
     ///
 
-    public FileSize(long input) => Value = input.UInt64();
+    public static FileSize operator +(FileSize i) => +i.Value;
 
-    public FileSize(ulong input) => Value = input;
+    public static FileSize operator +(FileSize a, FileSize b) => a.Value + b.Value;
 
-    ///
+    public static FileSize operator ++(FileSize i) => i.Value + 1;
 
-    public static bool operator ==(FileSize a, FileSize b) => a.EqualsOverload(b);
+    public static FileSize operator -(FileSize i) => i.Value;
 
-    public static bool operator !=(FileSize a, FileSize b) => !(a == b);
+    public static FileSize operator -(FileSize a, FileSize b) => a.Value - b.Value;
 
-    ///
+    public static FileSize operator --(FileSize i) => i.Value - 1;
 
-    public bool Equals(FileSize i)
-        => this.Equals<FileSize>(i) && Value.Equals(i.Value);
+    public static FileSize operator /(FileSize a, FileSize b) => a.Value / b.Value;
 
-    public override bool Equals(object i)
-        => Equals((FileSize)i);
+    public static FileSize operator *(FileSize a, FileSize b) => a.Value * b.Value;
 
-    public override int GetHashCode()
-        => Value.GetHashCode();
+    public static FileSize operator %(FileSize a, FileSize b) => a.Value % b.Value;
 
-    ///
+    #endregion
 
-    public override string ToString() => ToString(FileSizeFormat.BinaryUsingSI, 1);
+    /// <see cref="IFormattable"/>
 
-    public string ToString(FileSizeFormat format, int round = 1)
+    public readonly override string ToString() => ToString(Text.StringFormat.General, CultureInfo.CurrentCulture);
+
+    public readonly string ToString(string format) => ToString(format, CultureInfo.CurrentCulture);
+
+    public readonly string ToString(string format, IFormatProvider provider) => ToString(FileSizeFormat.BinaryUsingSI, 1, format, provider);
+
+    public readonly string ToString(FileSizeFormat sizeFormat, int round = 1, string format = null, IFormatProvider provider = null)
     {
-        if (format == FileSizeFormat.Bytes)
-            return Value.ToString();
+        if (sizeFormat == FileSizeFormat.Bytes)
+            return Value.ToString(format, provider);
 
-        var Labels = new string[]
-        {
-            "B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"
-        };
-
-        if (format == FileSizeFormat.BinaryUsingSI || format == FileSizeFormat.DecimalUsingSI)
-        {
-            Labels = new string[]
-            {
-            "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"
-            };
-        }
-
+        var label = sizeFormat switch { FileSizeFormat.BinaryUsingSI => LabelSI, FileSizeFormat.DecimalUsingSI => LabelSI, FileSizeFormat.IECBinary => Label };
         if (Value == 0)
-            return "0 B";
+            return StringFormat.F(0.ToString(format, provider), Byte);
 
-        var f = format == FileSizeFormat.BinaryUsingSI || format == FileSizeFormat.IECBinary ? (ulong)1024 : 1000;
+        var f = sizeFormat == FileSizeFormat.BinaryUsingSI || sizeFormat == FileSizeFormat.IECBinary ? UpperBinary : Upper;
 
         var m = (int)Math.Log(Value, f);
         var a = (decimal)Value / (1L << (m * 10));
@@ -75,23 +102,7 @@ public struct FileSize : IEquatable<FileSize>
             a /= f;
         }
 
-        var result = string.Format("{0:n" + round + "}", a);
-
-        var j = result.Length;
-        for (var i = result.Length - 1; i >= 0; i--)
-        {
-            if (result[i] == '.')
-            {
-                j--;
-                break;
-            }
-            if (result[i] == '0')
-            {
-                j--;
-            }
-            else break;
-        }
-
-        return $"{result.Substring(0, j)} {Labels[m]}"; ;
+        format ??= "n" + round;
+        return StringFormat.F(a.ToString(format, provider), label[m]);
     }
 }

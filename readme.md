@@ -1,12 +1,12 @@
-Imagin.Core ![](https://img.shields.io/badge/style-7.1-blue.svg?style=flat&label=Version)
+Ion ![](https://img.shields.io/badge/style-7.1-blue.svg?style=flat&label=Version)
 ---
 Core elements for shared projects.
 
-[Nuget](https://www.nuget.org/packages/Imagin.Core/)
+[Nuget](https://www.nuget.org/packages/Ion/)
 ---
 ### Quick install
-##### Imagin.Core
-> _`Install-Package Imagin.Core -Version *.0.0`_
+##### Ion
+> _`Install-Package Ion -Version *.0.0`_
 
 [Learn more...](https://github.com/imagin-code/Core/wiki/Getting-Started#install-with-nuget-coming-soon)
 

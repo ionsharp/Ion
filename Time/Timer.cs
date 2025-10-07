@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Imagin.Core.Time;
+namespace Ion.Time;
 
 public class Timer : BaseTimer
 {

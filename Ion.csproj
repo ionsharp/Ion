@@ -1,0 +1,81 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <LangVersion>preview</LangVersion>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <Authors>Ion</Authors>
+    <Company>Ion</Company>
+    <Copyright>No rights reserved.</Copyright>
+    <Description>Common elements for shared projects.</Description>
+    <NeutralLanguage>en</NeutralLanguage>
+    <RepositoryUrl>https://github.com/ionsharp/</RepositoryUrl>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <AssemblyName>Ion</AssemblyName>
+    <AssemblyTitle>Ion</AssemblyTitle>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <RootNamespace>Ion</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.0.0</Version>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <NoWarn>MSB3290;NU1701;8509;8524;8600;8601;8604;8625</NoWarn>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageIcon>Logo.png</PackageIcon>
+    <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/ionsharp/Ion</PackageProjectUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageTags>ion;core;net;wpf;windows</PackageTags>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <Configurations>Debug</Configurations>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="Other\**" />
+    <EmbeddedResource Remove="Other\**" />
+    <None Remove="Other\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Remove="Numeral\Area\Area+MN.cs" />
+    <Compile Remove="Numeral\Size\Size+MN.cs" />
+    <Compile Remove="Numeral\Size\Size+N.cs" />
+    <Compile Remove="Reflect\InstanceStyle.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".gitattributes" />
+    <None Remove=".gitignore" />
+    <None Remove="project.json" />
+    <None Remove="project.lock.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="readme.md" pack="true" PackagePath="." />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="System.CodeDom" Version="9.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="Logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,15 +1,10 @@
 ﻿using System;
 
-namespace Imagin.Core.Time;
+namespace Ion.Time;
 
 public delegate void TickEventHandler(BaseTimer sender, TickEventArgs e);
 
-public class TickEventArgs : EventArgs
+public class TickEventArgs(TimeSpan elapsed) : EventArgs
 {
-    public readonly TimeSpan Elapsed;
-
-    public TickEventArgs(TimeSpan elapsed)
-    {
-        Elapsed = elapsed;
-    }
+    public readonly TimeSpan Elapsed = elapsed;
 }

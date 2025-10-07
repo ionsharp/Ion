@@ -1,8 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 
-namespace Imagin.Core.Time;
+namespace Ion.Time;
 
-[Serializable]
 public enum TimeZone
 {
     [Name("(UTC-12:00) International Date Line West")]
@@ -267,4 +267,22 @@ public enum TimeZone
     SamoaStandardTime,
     [Name("(UTC+14:00) Kiritimati Island")]
     LineIslandsStandardTime,
+}
+
+[Extend<TimeZone>]
+public static class XTimeZone
+{
+    public static TimeZoneInfo GetInfo(this TimeZone i) => TimeZoneInfo.FindSystemTimeZoneById($"{i}".GetCamel());
+
+    /// <summary>
+    /// Get <see cref="DateTime.Now"/> based on the given <see cref="TimeZone"/> and <see cref="DateTimeKind"/>.
+    /// </summary>
+    /// <inheritdoc cref="TimeZoneInfo.ConvertTime(DateTime, TimeZoneInfo)"/>
+    /// <inheritdoc cref="TimeZoneInfo.ConvertTimeFromUtc(DateTime, TimeZoneInfo)"/>
+    /// <inheritdoc cref="TimeZoneInfo.FindSystemTimeZoneById(string)"/>
+    public static DateTime Now(this TimeZone i, DateTimeKind kind = DateTimeKind.Local) => kind switch
+    {
+        DateTimeKind.Utc => TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, GetInfo(i)),
+        _ => TimeZoneInfo.ConvertTime(DateTime.Now, GetInfo(i))
+    };
 }

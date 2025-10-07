@@ -1,20 +1,23 @@
-﻿namespace Imagin.Core.Text;
+﻿namespace Ion.Text;
 
 public class Characters
 {
-    public static string All = $"{Numbers}{Lower}{Special}{Upper}";
+    public const string All = Numbers + Lower + Special + Upper;
 
-    public static string LettersAndNumbers = $"{Numbers}{Lower}{Upper}";
+    public const string LettersAndNumbers = Numbers + Lower + Upper;
 
-    public const string Numbers 
+    public const string Numbers
         = "0123456789";
 
-    public const string Lower 
+    public const string Lower
         = "abcdefghijklmnopqrstuvwxyz";
 
-    public const string Special 
+    /// <summary>Characters that might be confused with one another are removed (64 characters).</summary>
+    public const string Password = "!#%+23456789:=?@ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+    public const string Special
         = "!@#$%^&*()-=_+[]{};':\",./<>?`~\\|";
 
-    public const string Upper 
+    public const string Upper
         = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 }

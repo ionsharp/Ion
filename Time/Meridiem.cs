@@ -1,9 +1,6 @@
-﻿using System;
-
-namespace Imagin.Core.Time;
+﻿namespace Ion.Time;
 
 /// <summary>Specifies a time before or after midday.</summary>
-[Serializable]
 public enum Meridiem
 {
     /// <summary>Specifies a time BEFORE midday.</summary>

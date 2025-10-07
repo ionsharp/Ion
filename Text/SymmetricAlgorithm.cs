@@ -1,8 +1,8 @@
-﻿using System;
+﻿namespace Ion.Text;
 
-namespace Imagin.Core.Text;
-
-[Serializable]
+/// <summary>
+/// An algorithm used to decrypt/encrypt text.
+/// </summary>
 public enum SymmetricAlgorithm
 {
     Aes,

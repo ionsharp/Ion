@@ -1,16 +1,11 @@
 ﻿using System;
 
-namespace Imagin.Core;
+namespace Ion.Storage;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public class FileAttribute : Attribute
+public sealed class FileAttribute(string name = "", string extension = "") : Attribute
 {
-    public string Extension { get; set; }
+    public string Extension { get; set; } = extension;
 
-    public string Name { get; set; }
-
-    public FileAttribute(string name = "", string extension = "")
-    {
-        Name = name; Extension = extension;
-    }
+    public string Name { get; set; } = name;
 }
