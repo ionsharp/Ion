@@ -1,4 +1,4 @@
-Ion ![](https://img.shields.io/badge/style-7.1-blue.svg?style=flat&label=Version)
+Ion ![](https://img.shields.io/badge/style-8.0-blue.svg?style=flat&label=Version)
 ---
 Core elements for shared projects.
 
