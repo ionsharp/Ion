@@ -65,10 +65,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="readme.md" pack="true" PackagePath="." />
-  </ItemGroup>
-  
-  <ItemGroup>
     <PackageReference Include="System.CodeDom" Version="9.0.0" />
   </ItemGroup>
   
