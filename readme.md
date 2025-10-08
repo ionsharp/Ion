@@ -7,7 +7,6 @@ Ion
 [Nuget](https://www.nuget.org/packages/Ion/)
 ---
 ### Quick install
-##### Ion
 > _`Install-Package Ion -Version *.0.0`_
 
 [Learn more...](https://github.com/ionsharp/Ion/wiki/Getting-Started#install-with-nuget-coming-soon)
