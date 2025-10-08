@@ -20,7 +20,7 @@ public static class Log
 
     private static void OnAdded(IEntry entry)
     {
-        if (Options.EnableConsole)
+        if (Options == null || Options.EnableConsole)
             Console.WriteLine(StringFormat.F(entry.Sender, entry.Member, entry.Line, entry.Result));
 
         Added?.Invoke(new LogEventArgs(entry));
