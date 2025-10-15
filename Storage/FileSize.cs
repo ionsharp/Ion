@@ -19,14 +19,14 @@ public readonly record struct FileSize(long Value) : IFormattable, IMinMaxValue<
 
     public static readonly string[] LabelSI = [Byte, "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
-    public static readonly long Max = ulong.MaxValue.ToInt64();
+    public static readonly long Max = long.MaxValue;
 
-    public static readonly long Min = ulong.MinValue.ToInt64();
+    public static readonly long Min = 0;
 
-    /// <inheritdoc cref="ulong.MaxValue"/>
+    /// <inheritdoc cref="long.MaxValue"/>
     public static FileSize MaxValue => new(Max);
 
-    /// <inheritdoc cref="ulong.MinValue"/>
+    /// <inheritdoc cref="long.MinValue"/>
     public static FileSize MinValue => new(Min);
 
     public readonly long Value { get; } = Value.Clamp(Min, Max);

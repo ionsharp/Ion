@@ -563,7 +563,7 @@ public static partial class Instance
     #region
 
     public static string GetName(object i)
-        => i?.GetAttribute<DisplayNameAttribute>()?.DisplayName;
+        => i?.GetAttribute<DisplayNameAttribute>()?.DisplayName ?? i?.GetAttribute<NameAttribute>()?.Name;
 
     #endregion
 

@@ -102,6 +102,9 @@ public record class Vector2M<T>
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator() => (ToArray() as IEnumerable<T>).GetEnumerator();
 
+    [NotImplemented]
+    public void Add(object i) => throw new NotImplementedException();
+
     /// <see cref="IFormattable"/>
 
     public override string ToString(string format, IFormatProvider provider) => IVector2.ToString(this, format, provider);

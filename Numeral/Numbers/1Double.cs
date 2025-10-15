@@ -165,6 +165,32 @@ public readonly record struct Double1(double Value)
 
     public static Double1 Abs(Double1 i) => new(i.Value);
 
+    [NotComplete]
+    public static Double1 CreateChecked<TOther>(TOther value) where TOther : INumberBase<TOther>
+    {
+        double d = Convert.ToDouble(value, CultureInfo.InvariantCulture);
+        if (d < 0 || d > 1)
+            throw new OverflowException($"Value {d} is out of range for Double1 (must be between 0 and 1).");
+        
+        return new Double1(d);
+    }
+
+    [NotComplete]
+    public static Double1 CreateSaturating<TOther>(TOther value) where TOther : INumberBase<TOther>
+    {
+        double d = Convert.ToDouble(value, CultureInfo.InvariantCulture);
+        if (d < 0) d = 0;
+        else if (d > 1) d = 1;
+        return new Double1(d);
+    }
+
+    [NotComplete]
+    public static Double1 CreateTruncating<TOther>(TOther value) where TOther : INumberBase<TOther>
+    {
+        double d = Convert.ToDouble(value, CultureInfo.InvariantCulture);
+        return new Double1(Math.Clamp(d, 0, 1));
+    }
+
     public static bool IsCanonical(Double1 i) => true;
     public static bool IsComplexNumber(Double1 i) => false;
     public static bool IsEvenInteger(Double1 i) => double.IsEvenInteger(i.Value);

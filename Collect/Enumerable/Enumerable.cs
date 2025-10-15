@@ -139,12 +139,15 @@ public static partial class XEnumerable
     /// Get if contains given <see cref="object"/>.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
+    [NotComplete]
     public static bool Contains(this IEnumerable i, object item)
     {
         Throw.IfNull(i, nameof(i));
 
         foreach (var j in i)
         {
+            /// Why is this needed to avoid exception?
+            if (j is null) continue;
             if (j.Equals(item))
                 return true;
         }
@@ -446,7 +449,7 @@ public static partial class XEnumerable
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static string ToString(this IEnumerable i, string delimit, Func<object, string> format = null)
-        => i.ToString(delimit, (_, j) => format(j));
+        => i.ToString(delimit, format is null ? null : (_, j) => format(j));
 
     /// <summary>
     /// Get as <see cref="string"/> with given delimiter and format.
@@ -788,7 +791,7 @@ public static partial class XEnumerable
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static string ToString<T>(this IEnumerable<T> i, string delimit, Func<T, string> format = null)
-        => i.ToString(delimit, (_, j) => format(j));
+        => i.ToString(delimit, format is null ? null : (_, j) => format(j));
 
     /// <summary>
     /// Get as <see cref="string"/> with given delimiter and format.

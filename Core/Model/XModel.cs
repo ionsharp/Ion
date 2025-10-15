@@ -2,6 +2,7 @@
 using Ion.Reflect;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
@@ -14,6 +15,7 @@ public static class XModel
     /// Get <see langword="value"/> of given <b>propertyName</b>.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
+    [NotSolved]
     private static TPublic Get<TPublic, TPrivate>(IPropertySet i, TPublic defaultValue, bool serialize, string propertyName, Func<TPublic, TPrivate> convertTo, Func<TPrivate, TPublic> convertBack)
     {
         Throw.IfNull(i, nameof(i));
@@ -39,7 +41,19 @@ public static class XModel
 
         /// Automatically convert string back to nonserializable enum
         if (serialize && isNonSerializable<TPublic>())
+        {
+            /// Try to get what was stored
             result = Try.Get(() => (TPrivate)Enum.Parse(typeof(TPrivate), $"{result}"));
+        }
+
+        /// Why is this needed?
+        if (typeof(TPublic).IsEnum && (!serialize || !isNonSerializable<TPublic>()))
+        {
+            if (result is null)
+            {
+                result = default(TPrivate); 
+            }
+        }
 
         var resultFinal = convertBack((TPrivate)result);
 

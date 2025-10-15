@@ -12,7 +12,7 @@ public readonly record struct FilePath(string Path) : IFormattable
 {
     /// <see cref="Region.Field"/>
 
-    public const string DefaultCloneFormat = "{0} [{1}]";
+    public const string DefaultCloneFormat = "{0} ({1})";
 
     public const string Root = @"\";
 

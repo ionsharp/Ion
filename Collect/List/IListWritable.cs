@@ -84,8 +84,10 @@ public static class XListWritable
         return result;
     }
 
+    [NotComplete, NotStable]
     public static Result Load<T>(this IListWritable<T> i)
     {
+        return false; /// The next line causes app to silently crash!
         /// Get the data from the file
         var result = i.Deserialize(i.FilePath, out object items);
 

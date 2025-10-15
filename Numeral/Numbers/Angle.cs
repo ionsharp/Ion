@@ -151,9 +151,9 @@ public readonly record struct Angle(double Value, AngleType Type = AngleType.Deg
             angle = Pd * angle;
 
         /// Clamp to relevant range
-        var j = angle % MaxValue;
-        j = j >= 0 ? j : (j + MaxValue);
-        return Math.Clamp(j, MinValue, MaxValue);
+        var j = angle % C;
+        j = j >= 0 ? j : (j + C);
+        return Math.Clamp(j, 0, C);
     }
 
     ///

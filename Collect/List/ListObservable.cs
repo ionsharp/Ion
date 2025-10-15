@@ -236,20 +236,58 @@ public class ListObservable<T> : ListOf<T>, IChange, IListLimited<T>, IListObser
 
     public virtual void OnSettingProperty(PropertySettingEventArgs e) { }
 
-    bool IList.IsFixedSize => throw new NotImplementedException();
+    [NotComplete]
+    bool IList.IsFixedSize => false;
 
-    bool ICollection.IsSynchronized => throw new NotImplementedException();
+    [NotComplete]
+    bool ICollection.IsSynchronized => false;
 
-    object ICollection.SyncRoot => throw new NotImplementedException();
+    [NotComplete]
+    object ICollection.SyncRoot => null;
 
-    object IList.this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    object IList.this[int index] 
+    { 
+        get => this[index]; 
+        set
+        { 
+            if (value is T i)
+            {
+                this[index] = i;
+            }
+        }
+    }
 
-    int IList.Add(object value) => throw new NotImplementedException();
-    bool IList.Contains(object value) => throw new NotImplementedException();
-    int IList.IndexOf(object value) => throw new NotImplementedException();
-    void IList.Insert(int index, object value) => throw new NotImplementedException();
-    void IList.Remove(object value) => throw new NotImplementedException();
-    void ICollection.CopyTo(Array array, int index) => throw new NotImplementedException();
+    int IList.Add(object value)
+    {
+        if (value is T i)
+        {
+            Add(i);
+            return Count - 1;
+        }
+        return -1;
+    }
+
+    bool IList.Contains(object value) => value is T i && Contains(i);
+
+    int IList.IndexOf(object value) => value is T i ? IndexOf(i) : -1;
+
+    void IList.Insert(int index, object value)
+    {
+        if (value is T i)
+            Insert(index, i);
+    }
+
+    void IList.Remove(object value)
+    {
+        if (value is T i)
+            Remove(i);
+    }
+
+    [NotComplete]
+    void ICollection.CopyTo(Array array, int index)
+    {
+
+    }
 
     #endregion
 }

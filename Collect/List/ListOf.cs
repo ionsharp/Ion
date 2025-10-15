@@ -1,4 +1,5 @@
 ﻿using Ion.Core;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ namespace Ion.Collect;
 /// An <see cref="IList{T}"/>.
 /// </summary>
 /// <remarks>Wraps <see cref="List{T}"/>.</remarks>
-public class ListOf<T> : IList<T>, IListChanged<T>, IListReset<T>
+public class ListOf<T> : IList, IList<T>, IListChanged<T>, IListReset<T>
 {
     /// <see cref="Region.Event"/>
 
@@ -60,6 +61,14 @@ public class ListOf<T> : IList<T>, IListChanged<T>, IListReset<T>
 
     /// <inheritdoc cref="ICollectionReset{T}.DefaultItems"/>
     public virtual IReadOnlyCollection<T> DefaultItems => [];
+
+    public bool IsFixedSize => ((IList)_List).IsFixedSize;
+
+    public bool IsSynchronized => ((ICollection)_List).IsSynchronized;
+
+    public object SyncRoot => ((ICollection)_List).SyncRoot;
+
+    object IList.this[int index] { get => ((IList)_List)[index]; set => ((IList)_List)[index] = value; }
 
     public virtual T this[int index]
     {
@@ -293,6 +302,26 @@ public class ListOf<T> : IList<T>, IListChanged<T>, IListReset<T>
     IEnumerator IEnumerable.GetEnumerator() => _List.GetEnumerator();
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator() => _List.GetEnumerator();
+
+    /// <see cref="IList"/>
+
+    /// <inheritdoc cref="IList.Add(object)"/>
+    public int Add(object value) => ((IList)_List).Add(value);
+
+    /// <inheritdoc cref="IList.Contains(object)"/>
+    public bool Contains(object value) => ((IList)_List).Contains(value);
+
+    /// <inheritdoc cref="IList.IndexOf(object)"/>
+    public int IndexOf(object value) => ((IList)_List).IndexOf(value);
+
+    /// <inheritdoc cref="IList.Insert(int, object)"/>
+    public void Insert(int index, object value) => ((IList)_List).Insert(index, value);
+
+    /// <inheritdoc cref="IList.Remove(object)"/>
+    public void Remove(object value) => ((IList)_List).Remove(value);
+
+    /// <inheritdoc cref="IList.CopyTo(Array, int)"/>
+    public void CopyTo(Array array, int index) => ((ICollection)_List).CopyTo(array, index);
 
     /// <see cref="IReset"/>
 

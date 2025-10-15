@@ -115,6 +115,9 @@ public record class MSize<T>
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator() => ISize.GetEnumerator(this);
 
+    [NotImplemented]
+    public void Add(object i) => throw new NotImplementedException();
+
     /// <see cref="IFormattable"/>
 
     public override string ToString(string format, IFormatProvider provider) => ISize.ToString(this, format, provider);

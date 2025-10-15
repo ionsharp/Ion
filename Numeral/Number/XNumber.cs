@@ -36,19 +36,19 @@ public static partial class XNumber
 
     /// <inheritdoc cref="Create{}(int, NumberCreate)"/>
     public static T Create<T>(this Byte i, NumberCreate create = 0)
-        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
+        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Default or NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
 
     /// <inheritdoc cref="Create{}(int, NumberCreate)"/>
     public static T Create<T>(this Decimal i, NumberCreate create = 0)
-        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
+        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Default or NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
 
     /// <inheritdoc cref="Create{}(int, NumberCreate)"/>
     public static T Create<T>(this Double i, NumberCreate create = 0)
-        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
+        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Default or NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
 
     /// <inheritdoc cref="Create{}(int, NumberCreate)"/>
     public static T Create<T>(this Int16 i, NumberCreate create = 0)
-        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
+        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Default or NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
 
     /// <summary>
     /// Get instance of new type from instance of old type with given <see cref="NumberCreate"/>.
@@ -57,15 +57,15 @@ public static partial class XNumber
     /// <exception cref="NotSupportedException"/>
     /// <exception cref="OverflowException"/>
     public static T Create<T>(this Int32 i, NumberCreate create = 0)
-        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
+        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Default or NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
 
     /// <inheritdoc cref="Create{}(int, NumberCreate)"/>
     public static T Create<T>(this Int64 i, NumberCreate create = 0)
-        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
+        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Default or NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
 
     /// <inheritdoc cref="Create{}(int, NumberCreate)"/>
     public static T Create<T>(this Single i, NumberCreate create = 0)
-        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
+        where T : INumber<T> => create switch { NumberCreate.Checked => T.CreateChecked(i), NumberCreate.Default or NumberCreate.Saturated => T.CreateSaturating(i), NumberCreate.Truncated => T.CreateTruncating(i) };
 
     /// <summary>
     /// Get <b>i</b> ÷ <b>j</b>.
@@ -979,18 +979,19 @@ public static partial class XNumber
     /// </summary>
     /// <remarks>[<b>range</b>] ⇒ [0, 1]</remarks>
     public static Double1 Normalize<T>(this T i, (T Minimum, T Maximum) range)
-        where T : IMinMaxValue<T>, INumber<T> => i.Normalize(range.Minimum, range.Maximum);
+        where T : IMinMaxValue<T>, INumber<T> => i.Normalize(new Range<T>(range.Minimum, range.Maximum));
 
     /// <summary>
     /// Get in range of [0, 1] from given <see cref="IRange"/>.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     /// <remarks>[<see cref="IRange"/>] ⇒ [0, 1]</remarks>
+    [NotComplete]
     public static Double1 Normalize<T>(this T i, IRange<T> range)
         where T : IMinMaxValue<T>, INumber<T>
     {
         Throw.IfNull(range, nameof(range));
-        return i.ToDouble().ToRange(range.Minimum.ToDouble(), range.Maximum.ToDouble(), 0, 1).To<Double1>();
+        return (Double1)i.ToDouble().ToRange(range.Minimum.ToDouble(), range.Maximum.ToDouble(), 0, 1);
     }
 
     #endregion

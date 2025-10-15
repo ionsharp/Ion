@@ -29,8 +29,20 @@ public class DictionarySafe<Key, Value>() : IDictionary, IDictionary<Key, Value>
 
     public virtual Value this[Key key]
     {
-        get => (Value)this.GetOrAdd(key, null);
-        set => this.SetOrAdd(key, value);
+        get
+        {
+            if (!ContainsKey(key))
+                Add(key, default);
+
+            return _IDictionary2[key];
+        }
+        set
+        {
+            if (!ContainsKey(key))
+                Add(key, value);
+
+            else _IDictionary2[key] = value;
+        }
     }
 
     /// <see cref="IDictionary{Key, Value}"/>
@@ -69,7 +81,18 @@ public class DictionarySafe<Key, Value>() : IDictionary, IDictionary<Key, Value>
 
     /// <see cref="IDictionary"/>
 
-    object IDictionary.this[object key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    [NotOptimized]
+    object IDictionary.this[object key]
+    {
+        get => key is Key i ? this[i] : null; 
+        set
+        {
+            if (key is Key i && value is Value j)
+            {
+                this[i] = j;
+            }
+        }
+    }
 
     bool IDictionary.IsFixedSize => _IDictionary1.IsFixedSize;
 

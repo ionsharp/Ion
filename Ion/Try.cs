@@ -10,6 +10,10 @@ namespace Ion;
 /// <see cref="Try"/> and <see langword="catch"/> an <see cref="Exception"/>.
 /// </summary>
 [Using(typeof(Log))]
+[Using(typeof(Result))]
+[Using(typeof(Throw))]
+[Using(typeof(Void))]
+[Using(typeof(Task))]
 public static class Try
 {
     /// <see cref="Region.Field"/>
@@ -24,12 +28,13 @@ public static class Try
 
     private static void _Research([NotNull] Exception e, bool Research) => Research.If(() => _ = System.Diagnostics.Process.Start(DefaultResearchFormat.F(e.Message)));
 
+
     /// <summary>
     /// <see cref="Try"/> to do <see cref="Void"/>.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static Result Do(Void Try, Void Catch = null, Void Finally = null, bool Log = DefaultLog, bool Research = DefaultResearch)
-        => Do(Try, _ => Catch(), Finally, Log, Research);
+        => Do(Try, _ => Catch?.Invoke(), Finally, Log, Research);
 
     /// <summary>
     /// <see cref="Try"/> to do <see cref="Void"/>.
@@ -50,12 +55,13 @@ public static class Try
         finally { Finally?.Invoke(); }
     }
 
+
     /// <summary>
     /// <see cref="Try"/> to do <see cref="Void"/> on new <see cref="Thread"/>.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static async Task<Result> DoAwait(Void Try, Void Catch = null, Void Finally = null, bool Log = DefaultLog, bool Research = DefaultResearch)
-        => await DoAwait(Try, _ => Catch(), Finally, Log, Research);
+        => await DoAwait(Try, _ => Catch?.Invoke(), Finally, Log, Research);
 
     /// <summary>
     /// <see cref="Try"/> to do <see cref="Void"/> on new <see cref="Thread"/>.
@@ -66,6 +72,7 @@ public static class Try
         Throw.IfNull(Try, nameof(Try));
         return await Task.Run(() => Do(Try, Catch, Finally, Log, Research));
     }
+
 
     #pragma warning disable CA1068 /// Preference
     /// <summary>
@@ -85,7 +92,7 @@ public static class Try
     public static async Task<Result> DoAwait(CancellationToken token, Void<CancellationToken> Try, Void Catch = null, bool Log = DefaultLog, bool Research = DefaultResearch)
     {
         Throw.IfNull(Try, nameof(Try));
-        return await DoAwait(token, Try, _ => Catch(), Log, Research);
+        return await DoAwait(token, Try, _ => Catch?.Invoke(), Log, Research);
     }
 
     /// <summary>
@@ -105,7 +112,7 @@ public static class Try
     public static async Task<Result> DoAwait(CancellationToken token, Void<CancellationToken> Try, Void Catch, Void Finally, bool Log = DefaultLog, bool Research = DefaultResearch)
     {
         Throw.IfNull(Try, nameof(Try));
-        return await DoAwait(token, Try, _ => Catch(), Finally, Log, Research);
+        return await DoAwait(token, Try, _ => Catch?.Invoke(), Finally, Log, Research);
     }
 
     /// <summary>
@@ -119,26 +126,27 @@ public static class Try
     }
 #pragma warning restore CA1068
 
+
     /// <summary>
     /// <see cref="Try"/> to get something.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static T Get<T>(Func<T> Try, Void Catch = null, Void Finally = null, bool Log = DefaultLog, bool Research = DefaultResearch)
-        => Get(Try, _ => Catch(), Finally, Log, Research);
+        => Get(Try, _ => Catch?.Invoke(), Finally, Log, Research);
 
     /// <summary>
     /// <see cref="Try"/> to get something.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static T Get<T>(Func<T> Try, Void<Exception> Catch, Void Finally = null, bool Log = DefaultLog, bool Research = DefaultResearch)
-        => Get(Try, e => { Catch(e); return default; }, Finally, Log, Research);
+        => Get(Try, e => { Catch?.Invoke(e); return default; }, Finally, Log, Research);
 
     /// <summary>
     /// <see cref="Try"/> to get something.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static T Get<T>(Func<T> Try, Func<T> Catch, Void Finally = null, bool Log = DefaultLog, bool Research = DefaultResearch)
-        => Get(Try, _ => Catch(), Finally, Log, Research);
+        => Get(Try, _ => Catch?.Invoke(), Finally, Log, Research);
 
     /// <summary>
     /// <see cref="Try"/> to get something.
@@ -147,26 +155,27 @@ public static class Try
     public static T Get<T>(Func<T> Try, Func<Exception, T> Catch, Void Finally = null, bool Log = DefaultLog, bool Research = DefaultResearch)
         => Get(out _, Try, Catch, Finally, Log, Research);
 
+
     /// <summary>
     /// <see cref="Try"/> to get something.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static T Get<T>(out Result result, Func<T> Try, Void Catch = null, Void Finally = null, bool Log = DefaultLog, bool Research = DefaultResearch)
-        => Get(out result, Try, _ => Catch(), Finally, Log, Research);
+        => Get(out result, Try, _ => Catch?.Invoke(), Finally, Log, Research);
 
     /// <summary>
     /// <see cref="Try"/> to get something.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static T Get<T>(out Result result, Func<T> Try, Void<Exception> Catch, Void Finally = null, bool Log = DefaultLog, bool Research = DefaultResearch)
-        => Get(out result, Try, e => { Catch(e); return default; }, Finally, Log, Research);
+        => Get(out result, Try, e => { Catch?.Invoke(e); return default; }, Finally, Log, Research);
 
     /// <summary>
     /// <see cref="Try"/> to get something.
     /// </summary>
     /// <exception cref="ArgumentNullException"/>
     public static T Get<T>(out Result result, Func<T> Try, Func<T> Catch, Void Finally = null, bool Log = DefaultLog, bool Research = DefaultResearch)
-        => Get(out result, Try, _ => Catch(), Finally, Log, Research);
+        => Get(out result, Try, _ => Catch?.Invoke(), Finally, Log, Research);
 
     /// <summary>
     /// <see cref="Try"/> to get something.

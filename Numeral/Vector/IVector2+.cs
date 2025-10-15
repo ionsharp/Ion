@@ -13,9 +13,11 @@ public interface IVector2<T> : IVector2, IVectorFixed<T>
 
     object IVector2.Y => Y;
 
-    T IArray<T>.this[int i] => throw new NotSupportedException();
+    [NotComplete]
+    T IArray<T>.this[int i] => default;
 
-    T IArray1D<T>.this[int i] => throw new NotSupportedException();
+    [NotComplete]
+    T IArray1D<T>.this[int i] => default;
 }
 
 /// <inheritdoc/>
