@@ -2,6 +2,7 @@
 using Ion.Core;
 using Ion.Numeral.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -423,6 +424,24 @@ public abstract record class Shape() : Model(), IShape
     }
 
     ///
+
+    public static IEnumerable<Vector2> GetEllipse(double centerX, double centerY, double width, double height, int numPoints = 360)
+    {
+        var points = new List<Vector2>();
+        double radiusX = width / 2.0;
+        double radiusY = height / 2.0;
+        double angleStep = (2 * Math.PI) / numPoints;
+
+        for (int i = 0; i <= numPoints; i++)
+        {
+            double angle = i * angleStep;
+            double x = centerX + radiusX * Math.Cos(angle);
+            double y = centerY + radiusY * Math.Sin(angle);
+            points.Add(new Vector2(x, y));
+        }
+
+        return points;
+    }
 
     public static IEnumerable<Vector2> GetPolygon(MArea<int> region, double angle, uint sides, int quadrant)
     {

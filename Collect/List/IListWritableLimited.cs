@@ -15,6 +15,8 @@ namespace Ion.Collect;
 public interface IListWritableLimited<T> : IListWritable<T>, IListLimited<T>
 {
     new public ListWritableLimit Limit { get; }
+
+    ListLimit IListLimited<T>.Limit => new(Limit.Count, Limit.Action == ListWritableLimitAction.ClearAndArchive ? default : (ListLimitAction)(int)Limit);
 }
 
 /// <summary>

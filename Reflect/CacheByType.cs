@@ -3,7 +3,7 @@
 namespace Ion.Reflect;
 
 /// <summary>
-/// A <see cref="Cache"/> that stores <see cref="{Instance}"/> by <see cref="Type"/>.
+/// A <see cref="Cache"/> that stores <see cref="{T}"/> by <see cref="Type"/>.
 /// </summary>
 /// <remarks>
 /// Inherited types are considered unique/<see langword="interface"/> supported.

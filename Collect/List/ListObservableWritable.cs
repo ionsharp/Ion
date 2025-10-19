@@ -1,6 +1,7 @@
 ﻿using Ion.Analysis;
 using Ion.Analysis;
 using Ion.Core;
+using Ion.Serialization;
 using Ion.Text;
 using System;
 using System;
@@ -22,6 +23,10 @@ public class ListObservableWritable<T> : ListObservable<T>, IListWritable<T>, IL
 {
     /// <see cref="Region.Property"/>
 
+    /// <inheritdoc cref="IListWritable.FileEncoding"/>
+    public Encoding FileEncoding { get; set; } = IListWritable.DefaultEncoding;
+
+    /// <inheritdoc cref="IListWritable.FileExtension"/>
     public string FileExtension
     {
         get; set
@@ -29,10 +34,11 @@ public class ListObservableWritable<T> : ListObservable<T>, IListWritable<T>, IL
             Throw.IfNull(value, nameof(value));
 
             field = value;
-            FilePath = GetFilePath();
+            FilePath = this.GetFilePath();
         }
     }
 
+    /// <inheritdoc cref="IListWritable.FileName"/>
     public string FileName
     {
         get; set
@@ -40,24 +46,24 @@ public class ListObservableWritable<T> : ListObservable<T>, IListWritable<T>, IL
             Throw.IfNull(value, nameof(value));
 
             field = value;
-            FilePath = GetFilePath();
+            FilePath = this.GetFilePath();
         }
     }
 
+    /// <inheritdoc cref="IListWritable.FilePath"/>
     public string FilePath
     {
-        get; set
+        get; private set
         {
             field = value;
             Throw.If<ArgumentException>(field.Any(i => Path.GetInvalidPathChars().Contains(i)), nameof(FilePath));
         }
     }
 
-    /// <summary>
-    /// Preserve unreadable file by renaming it to something else. 
-    /// </summary>
+    /// <inheritdoc cref="IListWritable.FilePreserve"/>
     public bool FilePreserve { get; set; } = true;
 
+    /// <inheritdoc cref="IListWritable.FolderPath"/>
     public string FolderPath
     {
         get; set
@@ -65,15 +71,9 @@ public class ListObservableWritable<T> : ListObservable<T>, IListWritable<T>, IL
             Throw.IfNull(value, nameof(value));
 
             field = value;
-            FilePath = GetFilePath();
+            FilePath = this.GetFilePath();
         }
     }
-
-    public Encoding FileEncoding { get; set; } = Encoding.ASCII;
-
-    public JsonSerializerOptions FileOptions { get; set; } = new JsonSerializerOptions();
-
-    ListLimit IListLimited<T>.Limit => new(Limit.Count, Limit.Action == ListWritableLimitAction.ClearAndArchive ? default : (ListLimitAction)(int)Limit);
 
     /// <inheritdoc cref="ListWritableLimit"/>
     public ListWritableLimit Limit
@@ -86,6 +86,9 @@ public class ListObservableWritable<T> : ListObservable<T>, IListWritable<T>, IL
     }
     = ListWritableLimit.Default;
 
+    /// <inheritdoc cref="IListWritable.SerializationType"/>
+    public SerializationType SerializationType { get; set; } = IListWritable.DefaultSerializationType;
+
     /// <see cref="Region.Constructor"/>
 
     /// <inheritdoc/>
@@ -97,35 +100,9 @@ public class ListObservableWritable<T> : ListObservable<T>, IListWritable<T>, IL
     /// <inheritdoc/>
     public ListObservableWritable(IEnumerable<T> i) : base(i) { }
 
-    /// <exception cref="ArgumentException"/>
-    /// <exception cref="ArgumentNullException"/>
-    public ListObservableWritable(string filePath)
-    {
-        Throw.IfNull(filePath, nameof(filePath));
+    /// <see cref="Region.Method"/>
 
-        FolderPath = Path.GetDirectoryName(filePath);
-
-        FileName = Path.GetFileNameWithoutExtension(filePath);
-        FileExtension = Path.GetExtension(filePath)[1..];
-    }
-
-    /// <exception cref="ArgumentException"/>
-    /// <exception cref="ArgumentNullException"/>
-    public ListObservableWritable(string folderPath, string fileName, string fileExtension) : this([])
-    {
-        Throw.IfNull(folderPath, nameof(folderPath));
-
-        Throw.IfNull(fileName, nameof(fileName));
-        Throw.IfNull(fileExtension, nameof(fileExtension));
-
-        FolderPath = folderPath;
-
-        FileName = fileName;
-        FileExtension = fileExtension;
-    }
-
-    private string GetFilePath() => $@"{FolderPath}\{FileName}.{FileExtension}";
-
+    /// <inheritdoc/>
     protected override void OnAdding(ListAddingEventArgs e)
     {
         base.OnAdding(e);
@@ -134,8 +111,10 @@ public class ListObservableWritable<T> : ListObservable<T>, IListWritable<T>, IL
 
     /// <see cref="IListWritable"/>
 
+    /// <inheritdoc cref="IListWritable.Load"/>
     Result IListWritable.Load() => this.Load();
 
+    /// <inheritdoc cref="IListWritable.Save"/>
     Result IListWritable.Save() => this.Save();
 
 }

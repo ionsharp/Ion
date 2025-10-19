@@ -1,4 +1,5 @@
 ﻿using Ion.Analysis;
+using Ion.Serialization;
 using Ion.Storage;
 using Ion.Text;
 using System;
@@ -7,87 +8,94 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using static Ion.Analysis.Success;
 
 namespace Ion.Collect;
 
 /// <summary>
-/// An <see cref="IList"/> that loads and saves data to file.
+/// An <see cref="IList"/> that saves and loads data to and from file.
 /// </summary>
 public interface IListWritable
 {
-    public const string Description = "A list that can load and save data to a file.";
+    public const Encoding DefaultEncoding = Encoding.UTF8;
+
+    public const SerializationType DefaultSerializationType = SerializationType.JSON;
+
+    public const string Description = "A list that saves and loads data to and from file.";
 
     public Encoding FileEncoding { get; set; }
 
     public string FileExtension { get; set; }
 
     public string FileName { get; set; }
-
-    public JsonSerializerOptions FileOptions { get; set; }
     
     public string FilePath { get; }
 
+    /// <summary>
+    /// Preserve unreadable file by renaming it to something else. 
+    /// </summary>
     public bool FilePreserve { get; set; }
+
+    public string FolderPath { get; set; }
+     
+    public SerializationType SerializationType { get; set; }
 
     Result Load();
 
     Result Save();
 }
 
-/// <summary>
-/// An <see cref="IList{T}"/> that loads and saves data to file.
-/// </summary>
+/// <inheritdoc/>
 public interface IListWritable<T> : IListWritable, IList<T>, IListChanged<T>;
 
 /// <summary>
-/// Extends <see cref="IListWritable{T}"/>.
+/// Extends <see cref="IListWritable"/>.
 /// </summary>
-public static class XListWritable
+[Extend(typeof(IListWritable))]
+[Extend(typeof(IListWritable<>))]
+public static partial class XListWritable
 {
-    public static Result Deserialize<T>(this IListWritable<T> i, string filePath, out object data)
+    public static string GetFilePath(this IListWritable i) => $@"{i.FolderPath}\{i.FileName}.{i.FileExtension}";
+
+    /// <exception cref="ArgumentNullException"/>
+    public static void SetFile(this IListWritable i, string filePath)
     {
-        try
-        {
-            string text = File.ReadAllText(filePath, i.FileEncoding.New());
-            data = JsonSerializer.Deserialize(text, typeof(IEnumerable<T>), i.FileOptions);
+        Throw.IfNull(filePath, nameof(filePath));
 
-            return new Success();
-        }
-        catch (Exception e)
-        {
-            data = Enumerable.Empty<T>();
-            var error = new Error(e);
+        i.FolderPath = Path.GetDirectoryName(filePath);
 
-            Log.Write(error);
-            return error;
-        }
+        i.FileName = Path.GetFileNameWithoutExtension(filePath);
+        i.FileExtension = Path.GetExtension(filePath)[1..];
     }
 
-    public static Result Serialize<T>(this IListWritable<T> i, object data) => i.Serialize(i.FilePath, data);
+    /// <exception cref="ArgumentNullException"/>
+    public static void SetFile(this IListWritable i, string folderPath, string fileName, string fileExtension)
+    {
+        Throw.IfNull(folderPath, nameof(folderPath));
+
+        Throw.IfNull(fileName, nameof(fileName));
+        Throw.IfNull(fileExtension, nameof(fileExtension));
+
+        i.FolderPath = folderPath;
+
+        i.FileName = fileName;
+        i.FileExtension = fileExtension;
+    }
+
+    ///
+
+    public static Result Deserialize<T>(this IListWritable<T> i, string filePath, out object data)
+        => FileSerializer.Deserialize(filePath, out data, i.SerializationType, i.FileEncoding);
+
+    public static Result Serialize<T>(this IListWritable<T> i, object data)
+        => i.Serialize(i.FilePath, data);
 
     public static Result Serialize<T>(this IListWritable<T> i, string filePath, object data)
-    {
-        Result result = null;
-        try
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-            string text = JsonSerializer.Serialize(data, i.FileOptions);
+        => FileSerializer.Serialize(filePath, data, i.SerializationType, i.FileEncoding);
 
-            File.WriteAllText(filePath, text, i.FileEncoding.New());
-            result = new Success();
-        }
-        catch (Exception e)
-        {
-            result = new Error(e);
-            Log.Write(result);
-        }
-        return result;
-    }
-
-    [NotComplete, NotStable]
+    [NotTested]
     public static Result Load<T>(this IListWritable<T> i)
     {
-        return false; /// The next line causes app to silently crash!
         /// Get the data from the file
         var result = i.Deserialize(i.FilePath, out object items);
 
@@ -114,5 +122,6 @@ public static class XListWritable
         return result;
     }
 
+    [NotTested]
     public static Result Save<T>(this IListWritable<T> i) => i.Serialize(i);
 }

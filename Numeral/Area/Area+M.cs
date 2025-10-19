@@ -32,6 +32,8 @@ public record class MArea<T>
 
     /// <see cref="Region.Constructor"/>
 
+    public MArea() : this(T.Zero) { }
+
     /// <inheritdoc cref="IArea.Format{T}(in T)"/>
     public MArea(in T i)
         => (X, Y, Height, Width) = IArea.Format(i);
